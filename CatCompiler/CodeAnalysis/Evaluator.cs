@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CatCompiler
 {
-    public class Evaluator
+    public sealed class Evaluator
     {
         private readonly ExpressionSyntax _root;
 
@@ -22,7 +22,7 @@ namespace CatCompiler
 
         public int EvaluateExpression(ExpressionSyntax node)
         {
-            if (node is NumberExpressionSyntax numberExpression)
+            if (node is LiteralExpressionSyntax numberExpression)
             {
                 return (int) numberExpression.NumberToken.Value;
             }

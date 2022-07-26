@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CatCompiler
 {
-    internal class Parser
+    internal sealed class Parser
     {
         private readonly SyntaxToken[] _tokens;
         private int _position;
@@ -59,7 +59,7 @@ namespace CatCompiler
             return current;
         }
 
-        private SyntaxToken Match(SyntaxKind kind)
+        private SyntaxToken MatchToken(SyntaxKind kind)
         {
             if (Current.Kind == kind)
             {
@@ -72,8 +72,8 @@ namespace CatCompiler
 
         public SyntaxTree Parse()
         {
-            var expression = ParseTerm();
-            var endOfFileToken = Match(SyntaxKind.EnfOfFileToken);
+            var expression = ParseExpression();
+            var endOfFileToken = MatchToken(SyntaxKind.EnfOfFileToken);
             return new SyntaxTree(_diagnostics, expression, endOfFileToken);
         }
 
@@ -118,12 +118,12 @@ namespace CatCompiler
             {
                 var left = NextToken();
                 var expression = ParseExpression();
-                var right = Match(SyntaxKind.CloseParenthesisToken);
+                var right = MatchToken(SyntaxKind.CloseParenthesisToken);
                 return new ParenthesizedExpressionSyntax(left, expression, right);
             }
 
-            var numberToken = Match(SyntaxKind.NumberToken);
-            return new NumberExpressionSyntax(numberToken);
+            var numberToken = MatchToken(SyntaxKind.NumberToken);
+            return new LiteralExpressionSyntax(numberToken);
         }
     }
 }

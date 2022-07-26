@@ -8,16 +8,19 @@ namespace CatCompiler
 {
     public enum SyntaxKind
     {
-        NumberToken,
+        // Tokens
+        BadToken,
+        EnfOfFileToken,
         WhiteSpaceToken,
+        NumberToken,
         PlusToken,
         MinusToken,
         StarToken,
         SlashToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
-        BadToken,
-        EnfOfFileToken,
+
+        // Experessions
         NumberExpression,
         BinaryExpression,
         ParenthesizedExpression

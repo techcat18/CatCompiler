@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CatCompiler
 {
-    internal class Lexer
+    internal sealed class Lexer
     {
         private readonly string _text;
         private int _position;

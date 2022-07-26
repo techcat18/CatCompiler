@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CatCompiler
+namespace CatCompiler.CodeAnalysis.Syntax
 {
     public enum SyntaxKind
     {
@@ -21,8 +21,9 @@ namespace CatCompiler
         CloseParenthesisToken,
 
         // Experessions
-        NumberExpression,
+        LiteralExpression,
         BinaryExpression,
-        ParenthesizedExpression
+        ParenthesizedExpression,
+        UnaryExpression
     }
 }

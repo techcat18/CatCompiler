@@ -1,6 +1,7 @@
 ﻿
 
 using CatCompiler;
+using CatCompiler.CodeAnalysis.Syntax;
 
 bool showParseTree = false;
 

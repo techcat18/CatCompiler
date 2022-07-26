@@ -1,4 +1,4 @@
-﻿namespace CatCompiler
+﻿namespace CatCompiler.CodeAnalysis.Syntax
 {
     public abstract class ExpressionSyntax : SyntaxNode
     {

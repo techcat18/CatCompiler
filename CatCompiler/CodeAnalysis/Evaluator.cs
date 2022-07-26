@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CatCompiler.CodeAnalysis.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,25 @@ namespace CatCompiler
         {
             if (node is LiteralExpressionSyntax numberExpression)
             {
-                return (int) numberExpression.NumberToken.Value;
+                return (int) numberExpression.LiteralToken.Value;
+            }
+
+            if (node is UnaryExpressionSyntax unaryExpression)
+            {
+                var operand = EvaluateExpression(unaryExpression.Operand);
+
+                if (unaryExpression.OperatorToken.Kind == SyntaxKind.PlusToken)
+                {
+                    return operand;
+                }
+                else if (unaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
+                {
+                    return -operand;
+                }
+                else
+                {
+                    throw new Exception($"Unexpected unary operator: {unaryExpression.OperatorToken.Kind}");
+                }
             }
 
             if (node is BinaryExpressionSyntax binaryExpression)

@@ -1,4 +1,5 @@
-﻿using CatCompiler.CodeAnalysis.Syntax;
+﻿using CatCompiler.CodeAnalysis.Binding;
+using CatCompiler.CodeAnalysis.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace CatCompiler
 {
-    public sealed class Evaluator
+    internal sealed class Evaluator
     {
-        private readonly ExpressionSyntax _root;
+        private readonly BoundExpression _root;
 
-        public Evaluator(ExpressionSyntax root)
+        public Evaluator(BoundExpression root)
         {
             _root = root;
         }
@@ -21,61 +22,52 @@ namespace CatCompiler
             return EvaluateExpression(_root);
         }
 
-        public int EvaluateExpression(ExpressionSyntax node)
+        public int EvaluateExpression(BoundExpression node)
         {
-            if (node is LiteralExpressionSyntax numberExpression)
+            if (node is BoundLiteralExpression literalExpression)
             {
-                return (int) numberExpression.LiteralToken.Value;
+                return (int) literalExpression.Value;
             }
 
-            if (node is UnaryExpressionSyntax unaryExpression)
+            if (node is BoundUnaryExpression unaryExpression)
             {
                 var operand = EvaluateExpression(unaryExpression.Operand);
 
-                if (unaryExpression.OperatorToken.Kind == SyntaxKind.PlusToken)
+                switch (unaryExpression.OperatorKind)
                 {
-                    return operand;
-                }
-                else if (unaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
-                {
-                    return -operand;
-                }
-                else
-                {
-                    throw new Exception($"Unexpected unary operator: {unaryExpression.OperatorToken.Kind}");
+                    case BoundUnaryOperatorKind.Identity:
+                        return operand;
+
+                    case BoundUnaryOperatorKind.Negation:
+                        return -operand;
+
+                    default:
+                        throw new Exception($"Unexpected unary operator: {unaryExpression.OperatorKind}");
                 }
             }
 
-            if (node is BinaryExpressionSyntax binaryExpression)
+            if (node is BoundBinaryExpression binaryExpression)
             {
                 var left = EvaluateExpression(binaryExpression.Left);
                 var right = EvaluateExpression(binaryExpression.Right);
 
-                if (binaryExpression.OperatorToken.Kind == SyntaxKind.PlusToken)
+                switch (binaryExpression.OperatorKind)
                 {
-                    return left + right;
-                }
-                else if (binaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
-                {
-                    return left - right;
-                }
-                else if (binaryExpression.OperatorToken.Kind == SyntaxKind.StarToken)
-                {
-                    return left * right;
-                }
-                else if (binaryExpression.OperatorToken.Kind == SyntaxKind.SlashToken)
-                {
-                    return left / right;
-                }
-                else
-                {
-                    throw new Exception($"Unexpected binary operator {binaryExpression.OperatorToken.Kind}");
-                }
-            }
+                    case BoundBinaryOperatorKind.Addition:
+                        return left + right;
 
-            if (node is ParenthesizedExpressionSyntax parenthesizedExpression)
-            {
-                return EvaluateExpression(parenthesizedExpression.Expression);
+                    case BoundBinaryOperatorKind.Subtraction:
+                        return left - right;
+
+                    case BoundBinaryOperatorKind.Multiplication:
+                        return left * right;
+
+                    case BoundBinaryOperatorKind.Division:
+                        return left / right;
+
+                    default:
+                        throw new Exception($"Unexpected binary operator {binaryExpression.OperatorKind}");
+                }
             }
 
             throw new Exception($"Unexpected node {node.Kind}");

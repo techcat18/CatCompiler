@@ -1,9 +1,8 @@
-﻿
-
-using CatCompiler;
+﻿using CatCompiler;
+using CatCompiler.CodeAnalysis.Binding;
 using CatCompiler.CodeAnalysis.Syntax;
 
-bool showParseTree = false;
+var showParseTree = false;
 
 while (true)
 {
@@ -21,13 +20,16 @@ while (true)
         Console.WriteLine(showParseTree ? "Showing parse trees." : "Not showing parse trees.");
         continue;
     }
-    else if (line == "#cls")
+
+    if (line == "#cls")
     {
         Console.Clear();
         continue;
     }
 
     var syntaxTree = SyntaxTree.Parse(line);
+    var binder = new Binder();
+    var boundExpression = binder.BindExpression(syntaxTree.Root);
 
     if (showParseTree)
     {
@@ -38,7 +40,7 @@ while (true)
 
     if (!syntaxTree.Diagnostics.Any())
     {
-        var evaluator = new Evaluator(syntaxTree.Root);
+        var evaluator = new Evaluator(boundExpression);
         var result = evaluator.Evaluate();
         Console.WriteLine(result);
     }
